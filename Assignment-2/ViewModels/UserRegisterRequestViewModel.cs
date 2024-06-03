@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Assignment_2.Dto
 {
-    public class UserRegisterRequestDto
+    public class UserRegisterRequestViewModel
     {
         [Required(ErrorMessage = "Username is required")]
         [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters.")]

@@ -5,15 +5,15 @@ namespace Assignment_2.Mapper
 {
     public class UserDataMapper
     {
-        public static UserData MapToUserData(UserRegisterRequestDto userRegisterRequestDto)
+        public static UserData MapToUserData(UserRegisterRequestViewModel userRegisterRequestViewModel)
         {
             return new UserData
             {
-                Username = userRegisterRequestDto.Username,
-                Name = userRegisterRequestDto.Name,
-                Email = userRegisterRequestDto.Email,
-                Address = userRegisterRequestDto.Address,
-                PhoneNumber = userRegisterRequestDto.PhoneNumber
+                Username = userRegisterRequestViewModel.Username,
+                Name = userRegisterRequestViewModel.Name,
+                Email = userRegisterRequestViewModel.Email,
+                Address = userRegisterRequestViewModel.Address,
+                PhoneNumber = userRegisterRequestViewModel.PhoneNumber
             };
         }
     }

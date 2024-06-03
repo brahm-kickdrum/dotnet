@@ -1,8 +1,9 @@
 ﻿using Assignment_2.Entity;
+using Assignment_2.Repository.IRepository;
 
 namespace Assignment_2.Repository
 {
-    public class UserDataRepository
+    public class UserDataRepository : IUserDataRepository
     {
         private readonly List<UserData> _users;
 

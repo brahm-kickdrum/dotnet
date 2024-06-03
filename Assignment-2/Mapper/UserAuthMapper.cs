@@ -5,12 +5,21 @@ namespace Assignment_2.Mapper
 {
     public class UserAuthMapper
     {
-        public static UserAuth MapToUserAuth(UserRegisterRequestDto userRegisterRequestDto)
+        public static UserAuth MapToUserAuth(UserRegisterRequestViewModel userRegisterRequestViewModel)
         {
             return new UserAuth
             {
-                Username = userRegisterRequestDto.Username,
-                Password = userRegisterRequestDto.Password
+                Username = userRegisterRequestViewModel.Username,
+                Password = userRegisterRequestViewModel.Password
+            };
+        }
+
+        public static UserAuth MapUserLoginRequestViewModelToUserAuth(UserLoginRequestViewModel userLoginRequestViewModel)
+        {
+            return new UserAuth
+            {
+                Username = userLoginRequestViewModel.Username,
+                Password = userLoginRequestViewModel.Password
             };
         }
     }

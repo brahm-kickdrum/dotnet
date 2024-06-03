@@ -1,8 +1,9 @@
 ﻿using Assignment_2.Entity;
+using Assignment_2.Repository.IRepository;
 
 namespace Assignment_2.Repository
 {
-    public class AuthRepository
+    public class AuthRepository : IAuthRepository
     {
         private readonly List<UserAuth> _userAuthList;
 
@@ -15,7 +16,7 @@ namespace Assignment_2.Repository
         {
             _userAuthList.Add(userAuth);
             Console.WriteLine("List of users:");
-            foreach (var user in _userAuthList)
+            foreach (UserAuth user in _userAuthList)
             {
                 Console.WriteLine($"Username: {user.Username}, Password: {user.Password}");
             }

@@ -22,23 +22,15 @@ namespace Assignment_2.Controllers
         [HttpGet("get-user")]
         public ActionResult<UserData> getUser()
         {
-            var username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-            var userData = new UserData();
-
+            string? username = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+ 
             if (username == null)
             {
                 return NotFound("User not found");
             }
-            try
-            {
-                userData = _userDataService.GetUserData(username);
-            }
-            catch (UserNotFoundException ex)
-            {
-                return NotFound(ex);
-            }
 
+            UserData userData = _userDataService.GetUserData(username);
+ 
             return Ok(userData);
         }
     }

@@ -1,14 +1,16 @@
 ﻿using Assignment_2.CustomException;
 using Assignment_2.Entity;
 using Assignment_2.Repository;
+using Assignment_2.Repository.IRepository;
+using Assignment_2.Service.IService;
 
 namespace Assignment_2.Service
 {
-    public class UserDataService
+    public class UserDataService : IUserDataService
     {
-        private UserDataRepository _userDataRepository;
+        private IUserDataRepository _userDataRepository;
 
-        public UserDataService(UserDataRepository userDataRepository)
+        public UserDataService(IUserDataRepository userDataRepository)
         {
             _userDataRepository = userDataRepository;
         }
@@ -20,7 +22,7 @@ namespace Assignment_2.Service
 
         public bool IsEmailUnique(string email)
         {
-            var userDataList = _userDataRepository.GetUsersDataList();
+            List<UserData> userDataList = _userDataRepository.GetUsersDataList();
 
             if (userDataList.Any(user => user.Email == email))
             {
@@ -32,7 +34,7 @@ namespace Assignment_2.Service
 
         public bool IsUsernameUnique(string username)
         {
-            var userDataList = _userDataRepository.GetUsersDataList();
+            List<UserData> userDataList = _userDataRepository.GetUsersDataList();
 
             if (userDataList.Any(user => user.Username == username))
             {
@@ -44,9 +46,9 @@ namespace Assignment_2.Service
 
         public UserData GetUserData(string username)
         {
-            var userDataList = _userDataRepository.GetUsersDataList();
+            List<UserData> userDataList = _userDataRepository.GetUsersDataList();
 
-            var userData = userDataList.FirstOrDefault(u => u.Username == username);
+            UserData userData = userDataList.FirstOrDefault(u => u.Username == username);
 
             if (userData == null)
             {

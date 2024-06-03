@@ -6,8 +6,11 @@ namespace Assignment_2.Validations
     {
         protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
         {
-            var password = value.ToString();
+            string? password = value?.ToString();
 
+            if (password == null)
+                return new ValidationResult("Password cannot be null.");
+            
             if (password.Length < 8 || password.Length > 20)
                 return new ValidationResult("Password must be between 8 and 20 characters long.");
 
@@ -20,7 +23,7 @@ namespace Assignment_2.Validations
             if (!password.Any(char.IsDigit))
                 return new ValidationResult("Password must contain at least one digit.");
 
-            var specialCharacters = new[] { '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '{', '}', '[', ']', '|', '\\', ';', ':', '\'', '"', '<', '>', ',', '.', '/', '?' };
+            char[] specialCharacters = new[] { '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_', '+', '=', '{', '}', '[', ']', '|', '\\', ';', ':', '\'', '"', '<', '>', ',', '.', '/', '?' };
             if (!password.Any(c => specialCharacters.Contains(c)))
                 return new ValidationResult("Password must contain at least one special character.");
 

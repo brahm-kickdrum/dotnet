@@ -3,6 +3,7 @@ using Assignment_2.Dto;
 using Assignment_2.Entity;
 using Assignment_2.Mapper;
 using Assignment_2.Service;
+using Assignment_2.Service.IService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
@@ -16,34 +17,23 @@ namespace Assignment_2.Controllers
     [ApiController]
     public class AuthController : ControllerBase
     {
-        private AuthService _authService;
-        private UserDataService _userDataService;
-        public AuthController(AuthService authService, UserDataService userDataService)
+        private IAuthService _authService;
+        private IUserDataService _userDataService;
+        public AuthController(IAuthService authService, IUserDataService userDataService)
         {
             _authService = authService;
             _userDataService = userDataService;
         }
 
         [HttpPost("register")]
-        public ActionResult<string> Register(UserRegisterRequestDto userRegisterRequest)
+        public ActionResult<string> Register(UserRegisterRequestViewModel userRegisterRequest)
         {
-            try
+            if (_userDataService.IsUsernameUnique(userRegisterRequest.Username) && _userDataService.IsEmailUnique(userRegisterRequest.Email))
             {
-                if (_userDataService.IsUsernameUnique(userRegisterRequest.Username) && _userDataService.IsEmailUnique(userRegisterRequest.Email))
-                {
-                    UserAuth userAuth = UserAuthMapper.MapToUserAuth(userRegisterRequest);
-                    _authService.AddUserAuth(userAuth);
-                    UserData userData = UserDataMapper.MapToUserData(userRegisterRequest);
-                    _userDataService.AddUserData(userData);
-                }
-            }
-            catch (UsernameAlreadyExistsException ex)
-            {
-                return StatusCode(409, ex.Message);
-            }
-            catch (EmailAlreadyExistsException ex)
-            {
-                return StatusCode(409, ex.Message);
+                UserAuth userAuth = UserAuthMapper.MapToUserAuth(userRegisterRequest);
+                _authService.AddUserAuth(userAuth);
+                UserData userData = UserDataMapper.MapToUserData(userRegisterRequest);
+                _userDataService.AddUserData(userData);
             }
 
             return Ok("User registered successfully");
@@ -51,29 +41,17 @@ namespace Assignment_2.Controllers
 
         [AllowAnonymous]
         [HttpPost("login")]
-        public ActionResult<string> Login(UserAuth userRequestDto)
+        public ActionResult<string> Login(UserLoginRequestViewModel userRequestViewModel)
         {
-            try
+            UserAuth user = UserAuthMapper.MapUserLoginRequestViewModelToUserAuth(userRequestViewModel);
+            string username = _authService.AutheticateUser(user);
+            if (username != "")
             {
-                UserAuth user = userRequestDto;
-                var username = _authService.AutheticateUser(user);
-                if (username != "")
-                {
-                    var token = _authService.GenerateToken(username);
-                    return Ok(token);
-                }
-            }
-            catch (UserNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (InvalidPasswordException ex)
-            {
-                return Unauthorized(ex.Message);
+                string token = _authService.GenerateToken(username);
+                return Ok(token);
             }
 
             return BadRequest("Invalid username or password");
         }
-
     }
 }

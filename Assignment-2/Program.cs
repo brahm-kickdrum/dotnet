@@ -1,6 +1,8 @@
 using Assignment_2.Middleware;
 using Assignment_2.Repository;
+using Assignment_2.Repository.IRepository;
 using Assignment_2.Service;
+using Assignment_2.Service.IService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -24,10 +26,10 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
  });
 
 builder.Services.AddControllers();
-builder.Services.AddSingleton<AuthService>();
-builder.Services.AddSingleton<AuthRepository>();
-builder.Services.AddSingleton<UserDataService>();
-builder.Services.AddSingleton<UserDataRepository>();
+builder.Services.AddSingleton<IAuthService, AuthService>();
+builder.Services.AddSingleton<IUserDataService, UserDataService>();
+builder.Services.AddSingleton<IAuthRepository, AuthRepository>();
+builder.Services.AddSingleton<IUserDataRepository, UserDataRepository>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<GlobalExceptionHandlingMiddleware>();
