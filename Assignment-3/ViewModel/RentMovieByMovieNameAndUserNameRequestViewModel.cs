@@ -2,7 +2,7 @@
 
 namespace Assignment_3.Dtos
 {
-    public class RentMovieByMovieNameAndUserNameRequestDto
+    public class RentMovieByMovieNameAndUserNameRequestViewModel
     {
         [Required(ErrorMessage = "Movie title is required")]
         [StringLength(50, ErrorMessage = "Title length can't be more than 50 characters.")]

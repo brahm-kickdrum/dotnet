@@ -1,9 +1,9 @@
-﻿using Assignment_3.Entities;
-using Microsoft.AspNetCore.Mvc;
-using Assignment_3.Dtos;
-using Assignment_3.Services;
-using Assignment_3.Mappers;
+﻿using Assignment_3.Dtos;
+using Assignment_3.Entities;
 using Assignment_3.Exceptions;
+using Assignment_3.Mappers;
+using Assignment_3.Services.IServices;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Assignment_3.Controllers
 {
@@ -11,64 +11,40 @@ namespace Assignment_3.Controllers
     [ApiController]
     public class MovieController : ControllerBase
     {
-        private readonly MovieService _movieService;
+        private readonly IMovieService _movieService;
 
-        public MovieController(MovieService movieService)
+        public MovieController(IMovieService movieService)
         {
             _movieService = movieService;
         }
 
         [HttpPost]
-        public ActionResult<MovieIdResponseDto> Post([FromBody] CreateMovieRequestDto createMovieRequestDto)
+        public ActionResult<MovieIdResponseViewModel> Post([FromBody] CreateMovieRequestViewModel createMovieRequestViewModel)
         {
-            try
-            { 
-                Guid movieId = _movieService.AddMovie(MovieMapper.CreateMovieFromDto(createMovieRequestDto));
-                return Ok(MovieMapper.CreateMovieIdResponseDtoFromMovieId(movieId));
-            }
-            catch (FailedToAddMovieException ex) 
-            {
-                return StatusCode(500, ex.Message);
-            }
-            catch (MovieAlreadyExistsException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            Guid movieId = _movieService.AddMovie(MovieMapper.CreateMovieFromViewModel(createMovieRequestViewModel));
+            return Ok(MovieMapper.CreateMovieIdResponseViewModelFromMovieId(movieId));
         }
 
         [HttpGet]
-        public ActionResult<List<Movie>> GetAllMovies()
+        public ActionResult<MovieListResponseViewModel> GetAllMovies()
         {
             List<Movie> movieList = _movieService.GetAllMovies();
-            return Ok(movieList);
+            return Ok(MovieMapper.CreateMovieListResponseViewModelFromMovieList(movieList));
         }
 
         [HttpGet("id/{id}")]
-        public ActionResult<Movie> GetMovieById(Guid id)
+        public ActionResult<MovieResponseViewModel> GetMovieById(Guid id)
         {
-            try
-            {
-                Movie movie = _movieService.GetMovieById(id);
-                return Ok(movie);
-            }
-            catch (MovieNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            Movie movie = _movieService.GetMovieById(id);
+            MovieResponseViewModel movieViewModel = MovieMapper.CreateMovieResponseViewModelFromMovie(movie); 
+            return Ok(movieViewModel);
         }
 
         [HttpGet("title/{title}")]
-        public ActionResult<Movie> GetMovieByTitle(string title)
+        public ActionResult<MovieResponseViewModel> GetMovieByTitle(string title)
         {
-            try
-            {
-                Movie movie = _movieService.GetMovieByTitle(title);
-                return Ok(movie);
-            }
-            catch (MovieNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            Movie movie = _movieService.GetMovieByTitle(title);
+            return Ok(MovieMapper.CreateMovieResponseViewModelFromMovie(movie));
         }
     }
 }

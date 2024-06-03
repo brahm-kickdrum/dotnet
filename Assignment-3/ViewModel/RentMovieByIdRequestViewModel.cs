@@ -2,7 +2,7 @@
 
 namespace Assignment_3.Dtos
 {
-    public class RentMovieByIdRequestDto
+    public class RentMovieByIdRequestViewModel
     {
         [Required(ErrorMessage = "Movie Id is required.")]
         public Guid MovieId { get; set; }

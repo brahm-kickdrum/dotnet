@@ -2,6 +2,7 @@ using Assignment_3;
 using Assignment_3.DataAccess;
 using Assignment_3.Middlewares;
 using Assignment_3.Services;
+using Assignment_3.Services.IServices;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,9 +16,9 @@ builder.Services.AddDbContext<MovieRentalDbContext>
         options.UseNpgsql(builder.Configuration.GetConnectionString("Default"));
     });
 builder.Services.AddScoped<GlobalExceptionHandlingMiddleware>();
-builder.Services.AddScoped<MovieService>();
-builder.Services.AddScoped<CustomerService>();
-builder.Services.AddScoped<RentalService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<ICustomerService, CustomerService>();
+builder.Services.AddScoped<IRentalService, RentalService>();
 
 var app = builder.Build();
 

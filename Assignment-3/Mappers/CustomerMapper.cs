@@ -5,14 +5,14 @@ namespace Assignment_3.Mappers
 {
     public static class CustomerMapper
     {
-        public static Customer CreateCustomerFromDto(CreateCustomerRequestDto dto)
+        public static Customer CreateCustomerFromViewModel(CreateCustomerRequestViewModel viewModel)
         {
-            return new Customer(dto.Username, dto.Name, dto.Email);
+            return new Customer(viewModel.Username, viewModel.Name, viewModel.Email);
         }
 
-        public static CustomerIdResponseDto CreateResponseDtoFromCustomerId(Guid customerId)
+        public static CustomerIdResponseViewModel CreateResponseViewModelFromCustomerId(Guid customerId)
         {
-            return new CustomerIdResponseDto(customerId);
+            return new CustomerIdResponseViewModel(customerId);
         }
     }
 }
