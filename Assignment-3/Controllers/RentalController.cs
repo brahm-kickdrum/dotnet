@@ -2,6 +2,7 @@
 using Assignment_3.Exceptions;
 using Assignment_3.Mappers;
 using Assignment_3.Services;
+using Assignment_3.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Assignment_3.Controllers
@@ -10,105 +11,46 @@ namespace Assignment_3.Controllers
     [ApiController]
     public class RentalController : ControllerBase
     {
-        private readonly RentalService _rentalService;
+        private readonly IRentalService _rentalService;
 
-        public RentalController(RentalService rentalService)
+        public RentalController(IRentalService rentalService)
         {
             _rentalService = rentalService;
         }
 
         [HttpPost("id")]
-        public ActionResult<string> RentMovieById(RentMovieByIdRequestDto rentMovieRequestDto)
+        public ActionResult<RentalIdResponseViewModel> RentMovieById(RentMovieByIdRequestViewModel rentMovieRequestViewModel)
         {
-            try
-            {
-                Guid RentalId = _rentalService.RentMovieById(rentMovieRequestDto.MovieId, rentMovieRequestDto.CustomerId);
-                return Ok(RentalId);
-            }
-            catch (MovieNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (CustomerNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (RentalAlreadyExistsException ex)
-            {
-                return Conflict(ex.Message);
-            }
-            catch (FailedToAddRentalException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            Guid rentalId = _rentalService.RentMovieById(rentMovieRequestViewModel.MovieId, rentMovieRequestViewModel.CustomerId);
+            return Ok(RentalMapper.CreateRentalIdResponseViewModelFromRentalId(rentalId));
         }
 
         [HttpPost]
-        public ActionResult<string> RentMovieByMovieTitleAndUsername(RentMovieByMovieNameAndUserNameRequestDto rentMovieByMovieNameAndUserNameRequestDto)
+        public ActionResult<RentalIdResponseViewModel> RentMovieByMovieTitleAndUsername(RentMovieByMovieNameAndUserNameRequestViewModel rentMovieByMovieNameAndUserNameRequestViewModel)
         {
-            try
-            {
-                Guid RentalId = _rentalService.RentMovieByMovieTitleAndUsername(rentMovieByMovieNameAndUserNameRequestDto.MovieTitle, rentMovieByMovieNameAndUserNameRequestDto.CustomerUsername);
-                return Ok(RentalId);
-            }
-            catch (MovieNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (CustomerNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
-            catch (RentalAlreadyExistsException ex)
-            {
-                return Conflict(ex.Message);
-            }
-            catch (FailedToAddRentalException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
+            Guid rentalId = _rentalService.RentMovieByMovieTitleAndUsername(rentMovieByMovieNameAndUserNameRequestViewModel.MovieTitle, rentMovieByMovieNameAndUserNameRequestViewModel.CustomerUsername);
+            return Ok(RentalMapper.CreateRentalIdResponseViewModelFromRentalId(rentalId));
         }
 
         [HttpGet("movie-id/{id}")]
         public ActionResult<List<string>> GetCustomersByMovieId(Guid id)
         {
-            try
-            {
-                List<string> CustomerList = _rentalService.GetCustomersByMovieId(id);
-                return Ok(CustomerList);
-            }
-            catch (MovieNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            List<string> customerList = _rentalService.GetCustomersByMovieId(id);
+            return Ok(customerList);
         }
 
         [HttpGet("customer-id/{id}")]
         public ActionResult<List<string>> GetMoviesByCustomerId(Guid id)
         {
-            try
-            {
-                List<string> CustomerList = _rentalService.GetMoviesByCustomerId(id);
-                return Ok(CustomerList);
-            }
-            catch (CustomerNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            List<string> movieList = _rentalService.GetMoviesByCustomerId(id);
+            return Ok(movieList);
         }
 
         [HttpGet("cost/{id}")]
         public ActionResult<decimal> GetTotalCost(Guid id)
         {
-            try
-            {
-                decimal totalCost = _rentalService.GetTotalCostByCustomerId(id);
-                return Ok(totalCost);
-            }
-            catch (CustomerNotFoundException ex)
-            {
-                return NotFound(ex.Message);
-            }
+            decimal totalCost = _rentalService.GetTotalCostByCustomerId(id);
+            return Ok(totalCost);
         }
     }
 }

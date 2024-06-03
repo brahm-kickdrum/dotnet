@@ -1,10 +1,11 @@
 ﻿using Assignment_3.DataAccess;
 using Assignment_3.Entities;
 using Assignment_3.Exceptions;
+using Assignment_3.Services.IServices;
 
 namespace Assignment_3.Services
 {
-    public class CustomerService
+    public class CustomerService : ICustomerService
     {
         private readonly MovieRentalDbContext _dbContext;
 

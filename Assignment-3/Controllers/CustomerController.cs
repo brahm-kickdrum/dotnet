@@ -2,6 +2,7 @@
 using Assignment_3.Exceptions;
 using Assignment_3.Mappers;
 using Assignment_3.Services;
+using Assignment_3.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Assignment_3.Controllers
@@ -10,29 +11,18 @@ namespace Assignment_3.Controllers
     [ApiController]
     public class CustomerController : ControllerBase
     {
-        private readonly CustomerService _customerService;
+        private readonly ICustomerService _customerService;
 
-        public CustomerController(CustomerService customerService)
+        public CustomerController(ICustomerService customerService)
         {
             _customerService = customerService;
         }
 
         [HttpPost]
-        public ActionResult<CustomerIdResponseDto> Post([FromBody] CreateCustomerRequestDto createCustomerRequestDto)
+        public ActionResult<CustomerIdResponseViewModel> Post([FromBody] CreateCustomerRequestViewModel createCustomerRequestViewModel)
         {
-            try
-            {
-                Guid customerId = _customerService.AddCustomer(CustomerMapper.CreateCustomerFromDto(createCustomerRequestDto));
-                return Ok(CustomerMapper.CreateResponseDtoFromCustomerId(customerId));
-            }
-            catch (FailedToAddCustomerException ex)
-            {
-                return StatusCode(500, ex.Message);
-            }
-            catch (CustomerAlreadyExistsException ex)
-            {
-                return BadRequest(ex.Message);
-            }
+            Guid customerId = _customerService.AddCustomer(CustomerMapper.CreateCustomerFromViewModel(createCustomerRequestViewModel));
+            return Ok(CustomerMapper.CreateResponseViewModelFromCustomerId(customerId));
         }
     }
 }

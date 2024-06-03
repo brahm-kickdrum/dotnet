@@ -2,7 +2,7 @@
 
 namespace Assignment_3.Dtos
 {
-    public class CreateCustomerRequestDto
+    public class CreateCustomerRequestViewModel
     {
         [Required(ErrorMessage = "Username is required.")]
         [StringLength(50, ErrorMessage = "Username length can't be more than 50.")]

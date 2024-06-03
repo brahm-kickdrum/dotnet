@@ -1,11 +1,12 @@
 ﻿using Assignment_3.DataAccess;
 using Assignment_3.Entities;
 using Assignment_3.Exceptions;
+using Assignment_3.Services.IServices;
 using Microsoft.EntityFrameworkCore;
 
 namespace Assignment_3.Services
 {
-    public class MovieService
+    public class MovieService : IMovieService
     {
         private readonly MovieRentalDbContext _dbContext;
 

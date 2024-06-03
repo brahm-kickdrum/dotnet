@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Assignment_3.Dtos
 {
-    public class CreateMovieRequestDto
+    public class CreateMovieRequestViewModel
     {
         [Required(ErrorMessage = "Title is required.")]
         [StringLength(50, ErrorMessage = "Title length can't be more than 50 characters.")]
