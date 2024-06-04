@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using Assessment_1.Exceptions;
+using System.Net;
 using System.Text.Json;
 
 namespace Assessment_1.Middlewares
@@ -17,6 +18,26 @@ namespace Assessment_1.Middlewares
             try
             {
                 await next(context);
+            }
+            catch (DriverAlreadyExistsException ex)
+            {
+                await HandleExceptionAsync(context, ex, HttpStatusCode.BadRequest, ex.Message);
+            }
+            catch (DriveNotFoundException ex)
+            {
+                await HandleExceptionAsync(context, ex, HttpStatusCode.NotFound, ex.Message);
+            }
+            catch (InvalidPasswordException ex)
+            {
+                await HandleExceptionAsync(context, ex, HttpStatusCode.Unauthorized, ex.Message);
+            }
+            catch (RiderAlreadyExistsException ex)
+            {
+                await HandleExceptionAsync(context, ex, HttpStatusCode.BadRequest, ex.Message);
+            }
+            catch (RiderNotFoundException ex)
+            {
+                await HandleExceptionAsync(context, ex, HttpStatusCode.NotFound, ex.Message);
             }
             catch (Exception ex)
             {
