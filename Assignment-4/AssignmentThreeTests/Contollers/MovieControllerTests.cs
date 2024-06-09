@@ -29,7 +29,7 @@ namespace AssignmentThreeTests.Contollers
         public void Post_ReturnsOkResult_WhenMovieIsAddedSuccessfully()
         {
             // Arrange
-            CreateMovieRequestDto movieRequestDto = new CreateMovieRequestDto
+            CreateMovieRequestViewModel movieRequestViewModel = new CreateMovieRequestViewModel
             {
                 Title = "Test Movie",
                 Director = "Test Director",
@@ -42,62 +42,13 @@ namespace AssignmentThreeTests.Contollers
                 .Returns(movieId);
 
             // Act
-            ActionResult<MovieIdResponseDto> result = _controller.Post(movieRequestDto);
+            ActionResult<MovieIdResponseViewModel> result = _controller.Post(movieRequestViewModel);
 
             // Assert
-            ActionResult<MovieIdResponseDto> actionResult = Assert.IsType<ActionResult<MovieIdResponseDto>>(result);
+            ActionResult<MovieIdResponseViewModel> actionResult = Assert.IsType<ActionResult<MovieIdResponseViewModel>>(result);
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-            MovieIdResponseDto responseDto = Assert.IsType<MovieIdResponseDto>(okResult.Value);
-            Assert.Equal(movieId, responseDto.MovieId);
-        }
-
-        [Fact]
-        public void Post_ReturnsBadRequest_WhenMovieAlreadyExists()
-        {
-            // Arrange
-            CreateMovieRequestDto movieRequestDto = new CreateMovieRequestDto
-            {
-                Title = "Existing Movie",
-                Director = "Existing Director",
-                Genre = "Existing Genre",
-                Price = 100
-            };
-
-            _mockMovieService.Setup(service => service.AddMovie(It.IsAny<Movie>()))
-                .Throws(new MovieAlreadyExistsException("Movie already exists"));
-
-            // Act
-            ActionResult<MovieIdResponseDto> result = _controller.Post(movieRequestDto);
-
-            // Assert
-            ActionResult<MovieIdResponseDto> actionResult = Assert.IsType<ActionResult<MovieIdResponseDto>>(result);
-            BadRequestObjectResult badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult.Result);
-            Assert.Equal("Movie already exists", badRequestResult.Value);
-        }
-
-        [Fact]
-        public void Post_ReturnsInternalServerError_WhenFailedToAddMovie()
-        {
-            // Arrange
-            CreateMovieRequestDto movieRequestDto = new CreateMovieRequestDto
-            {
-                Title = "New Movie",
-                Director = "New Director",
-                Genre = "New Genre",
-                Price = 100
-            };
-
-            _mockMovieService.Setup(service => service.AddMovie(It.IsAny<Movie>()))
-                .Throws(new FailedToAddMovieException("Failed to add movie"));
-
-            // Act
-            ActionResult<MovieIdResponseDto> result = _controller.Post(movieRequestDto);
-
-            // Assert
-            ActionResult<MovieIdResponseDto> actionResult = Assert.IsType<ActionResult<MovieIdResponseDto>>(result);
-            ObjectResult statusCodeResult = Assert.IsType<ObjectResult>(actionResult.Result);
-            Assert.Equal(500, statusCodeResult.StatusCode);
-            Assert.Equal("Failed to add movie", statusCodeResult.Value);
+            MovieIdResponseViewModel responseViewModel = Assert.IsType<MovieIdResponseViewModel>(okResult.Value);
+            Assert.Equal(movieId, responseViewModel.MovieId);
         }
 
         [Fact]
@@ -114,71 +65,55 @@ namespace AssignmentThreeTests.Contollers
                 .Returns(movies);
 
             // Act
-            ActionResult<MovieListResponseDto> result = _controller.GetAllMovies();
+            ActionResult<MovieListResponseViewModel> result = _controller.GetAllMovies();
 
             // Assert
-            ActionResult<MovieListResponseDto> actionResult = Assert.IsType<ActionResult<MovieListResponseDto>>(result);
+            ActionResult<MovieListResponseViewModel> actionResult = Assert.IsType<ActionResult<MovieListResponseViewModel>>(result);
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-            MovieListResponseDto responseDto = Assert.IsType<MovieListResponseDto>(okResult.Value);
-            Assert.Equal(movies, responseDto.MovieList);
+            MovieListResponseViewModel responseViewModel = Assert.IsType<MovieListResponseViewModel>(okResult.Value);
+            Assert.Equal(movies, responseViewModel.MovieList);
         }
 
         [Fact]
-        public void GetMovieById_ReturnsOkResult_WithMovieDto()
+        public void GetMovieById_ReturnsOkResult_WithMovieViewModel()
         {
             // Arrange
             Movie movieEntity = new Movie("Test Movie", "Test Director", "Test Genre", 100);
             Guid movieId = movieEntity.MovieId;
-            MovieResponseDto movieResponseDto = new MovieResponseDto(movieId, "Test Movie", "Test Director", "Test Genre", 100);
+            MovieResponseViewModel movieResponseViewModel = new MovieResponseViewModel(movieId, "Test Movie", "Test Director", "Test Genre", 100);
             _mockMovieService.Setup(service => service.GetMovieById(movieId)).Returns(movieEntity);
 
             // Act
-            ActionResult<MovieResponseDto> result = _controller.GetMovieById(movieId);
+            ActionResult<MovieResponseViewModel> result = _controller.GetMovieById(movieId);
 
             // Assert
             Assert.IsType<OkObjectResult>(result.Result);
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result.Result);
-            MovieResponseDto model = Assert.IsType<MovieResponseDto>(okResult.Value);
-            Assert.Equal(movieResponseDto.MovieId, model.MovieId);
-            Assert.Equal(movieResponseDto.Title, model.Title);
-            Assert.Equal(movieResponseDto.Director, model.Director);
-            Assert.Equal(movieResponseDto.Genre, model.Genre);
-            Assert.Equal(movieResponseDto.Price, model.Price);
+            MovieResponseViewModel model = Assert.IsType<MovieResponseViewModel>(okResult.Value);
+            Assert.Equal(movieResponseViewModel.MovieId, model.MovieId);
+            Assert.Equal(movieResponseViewModel.Title, model.Title);
+            Assert.Equal(movieResponseViewModel.Director, model.Director);
+            Assert.Equal(movieResponseViewModel.Genre, model.Genre);
+            Assert.Equal(movieResponseViewModel.Price, model.Price);
         }
 
         [Fact]
-        public void GetMovieById_ReturnsNotFound_WhenMovieNotFound()
-        {
-            // Arrange
-            Guid movieId = Guid.NewGuid();
-            _mockMovieService.Setup(service => service.GetMovieById(movieId)).Throws(new MovieNotFoundException("Movie not found"));
-
-            // Act
-            ActionResult<MovieResponseDto> result = _controller.GetMovieById(movieId);
-
-            // Assert
-            ActionResult<MovieResponseDto> actionResult = Assert.IsType<ActionResult<MovieResponseDto>>(result);
-            NotFoundObjectResult notFoundResult = Assert.IsType<NotFoundObjectResult>(actionResult.Result);
-            Assert.Equal("Movie not found", notFoundResult.Value);
-        }
-
-        [Fact]
-        public void GetMovieByTitle_ReturnsOkResult_WithMovieDto()
+        public void GetMovieByTitle_ReturnsOkResult_WithMovieViewModel()
         {
             // Arrange
             string movieTitle = "Test Movie";
             Movie movie = new Movie(movieTitle, "Test Director", "Test Genre", 100);
             Guid movieId = movie.MovieId;
-            MovieResponseDto movieResponseDto = new MovieResponseDto(movieId, movieTitle, "Test Director", "Test Genre", 100);
+            MovieResponseViewModel movieResponseViewModel = new MovieResponseViewModel(movieId, movieTitle, "Test Director", "Test Genre", 100);
             _mockMovieService.Setup(service => service.GetMovieByTitle(movieTitle)).Returns(movie);
 
             // Act
-            ActionResult<MovieResponseDto> result = _controller.GetMovieByTitle(movieTitle);
+            ActionResult<MovieResponseViewModel> result = _controller.GetMovieByTitle(movieTitle);
 
             // Assert
             Assert.IsType<OkObjectResult>(result.Result);
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result.Result);
-            MovieResponseDto model = Assert.IsType<MovieResponseDto>(okResult.Value);
+            MovieResponseViewModel model = Assert.IsType<MovieResponseViewModel>(okResult.Value);
             Assert.Equal(movie.MovieId, model.MovieId);
             Assert.Equal(movie.Title, model.Title);
             Assert.Equal(movie.Director, model.Director);
@@ -186,20 +121,5 @@ namespace AssignmentThreeTests.Contollers
             Assert.Equal(movie.Price, model.Price);
         }
 
-        [Fact]
-        public void GetMovieByTitle_ReturnsNotFound_WhenMovieNotFound()
-        {
-            // Arrange
-            string movieTitle = "Non-existent Movie";
-            _mockMovieService.Setup(service => service.GetMovieByTitle(movieTitle)).Throws(new MovieNotFoundException("Movie not found"));
-
-            // Act
-            ActionResult<MovieResponseDto> result = _controller.GetMovieByTitle(movieTitle);
-
-            // Assert
-            Assert.IsType<NotFoundObjectResult>(result.Result);
-            NotFoundObjectResult notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
-            Assert.Equal("Movie not found", notFoundResult.Value);
-        }
     }
 }

@@ -12,12 +12,12 @@ namespace AssignmentOneTests.Models
         public void Constructor_InitializesPropertiesCorrectly()
         {
             // Arrange
-            var title = "Test Title";
-            var author = "Test Author";
-            var inventoryCount = 10;
+            string title = "Test Title";
+            string author = "Test Author";
+            int inventoryCount = 10;
 
             // Act
-            var book = new Book(title, author, inventoryCount);
+            Book book = new Book(title, author, inventoryCount);
 
             // Assert
             Assert.Equal(title, book.Title);
@@ -31,8 +31,8 @@ namespace AssignmentOneTests.Models
         public void AddUserToIssuedTo_AddsUserCorrectly()
         {
             // Arrange
-            var book = new Book("Test Title", "Test Author", 10);
-            var user = new User("Test User", UserType.Student);
+            Book book = new Book("Test Title", "Test Author", 10);
+            User user = new User("Test User", UserType.Student);
 
             // Act
             book.IssuedTo.Add(user);
@@ -46,8 +46,8 @@ namespace AssignmentOneTests.Models
         public void RemoveUserFromIssuedTo_RemovesUserCorrectly()
         {
             // Arrange
-            var book = new Book("Test Title", "Test Author", 10);
-            var user = new User("Test User", UserType.Student);
+            Book book = new Book("Test Title", "Test Author", 10);
+            User user = new User("Test User", UserType.Student);
             book.IssuedTo.Add(user);
 
             // Act

@@ -268,7 +268,7 @@ namespace AssignmentOneTests.Models
             book.IssuedTo.Add(user2);
 
             // Act
-            var consoleOutput = CaptureConsoleOutput(() => library.ListIssuers(book));
+            string consoleOutput = CaptureConsoleOutput(() => library.ListIssuers(book));
 
             // Assert
             Assert.Contains("Alice", consoleOutput);
@@ -285,7 +285,7 @@ namespace AssignmentOneTests.Models
             book.IssuedTo.Add(new User("Bob", UserType.Teacher));
 
             // Act
-            var consoleOutput = CaptureConsoleOutput(() => library.GetBookInventory(book));
+            string consoleOutput = CaptureConsoleOutput(() => library.GetBookInventory(book));
 
             // Assert
             Assert.Contains($"Inventory Count: {book.InventoryCount}", consoleOutput);
@@ -334,7 +334,7 @@ namespace AssignmentOneTests.Models
             library.RegisterUser(user);
 
             // Act
-            var output = CaptureConsoleOutput(() => library.ListUserBooks("John Doe"));
+            String output = CaptureConsoleOutput(() => library.ListUserBooks("John Doe"));
 
             // Assert
             Assert.Contains("Books issued to John Doe:", output);
@@ -349,7 +349,7 @@ namespace AssignmentOneTests.Models
             Library library = new Library();
 
             // Act
-            var output = CaptureConsoleOutput(() => library.ListUserBooks("Unknown User"));
+            String output = CaptureConsoleOutput(() => library.ListUserBooks("Unknown User"));
 
             // Assert
             Assert.Contains("User not found.", output);
@@ -362,7 +362,7 @@ namespace AssignmentOneTests.Models
             Library library = new Library();
 
             // Act
-            var output = CaptureConsoleOutput(() => library.GetBookInventoryInfo("Unknown Book"));
+            String output = CaptureConsoleOutput(() => library.GetBookInventoryInfo("Unknown Book"));
 
             // Assert
             Assert.Contains("Book not found in the library.", output);
@@ -375,7 +375,7 @@ namespace AssignmentOneTests.Models
             Library library = new Library();
 
             // Act
-            var output = CaptureConsoleOutput(() => library.ListIssuersOfBook("Unknown Book"));
+            String output = CaptureConsoleOutput(() => library.ListIssuersOfBook("Unknown Book"));
 
             // Assert
             Assert.Contains("Book not found in the library.", output);
@@ -383,7 +383,7 @@ namespace AssignmentOneTests.Models
 
         private string CaptureConsoleOutput(Action action)
         {
-            var consoleOutputWriter = new System.IO.StringWriter();
+            StringWriter consoleOutputWriter = new System.IO.StringWriter();
             Console.SetOut(consoleOutputWriter);
 
             action();

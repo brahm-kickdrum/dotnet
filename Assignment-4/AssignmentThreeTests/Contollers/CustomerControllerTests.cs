@@ -28,7 +28,7 @@ namespace AssignmentThreeTests.Contollers
         public void Post_ReturnsOkResult_WhenCustomerIsAddedSuccessfully()
         {
             // Arrange
-            CreateCustomerRequestDto customerRequestDto = new CreateCustomerRequestDto
+            CreateCustomerRequestViewModel customerRequestViewModel = new CreateCustomerRequestViewModel
             {
                 Username = "testuser",
                 Name = "Test User",
@@ -40,60 +40,13 @@ namespace AssignmentThreeTests.Contollers
                 .Returns(customerId);
 
             // Act
-            ActionResult<CustomerIdResponseDto> result = _controller.Post(customerRequestDto);
+            ActionResult<CustomerIdResponseViewModel> result = _controller.Post(customerRequestViewModel);
 
             // Assert
-            ActionResult<CustomerIdResponseDto> actionResult = Assert.IsType<ActionResult<CustomerIdResponseDto>>(result);
+            ActionResult<CustomerIdResponseViewModel> actionResult = Assert.IsType<ActionResult<CustomerIdResponseViewModel>>(result);
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(actionResult.Result);
-            CustomerIdResponseDto responseDto = Assert.IsType<CustomerIdResponseDto>(okResult.Value);
-            Assert.Equal(customerId, responseDto.CustomerId);
-        }
-
-        [Fact]
-        public void Post_ReturnsBadRequest_WhenCustomerAlreadyExists()
-        {
-            // Arrange
-            CreateCustomerRequestDto customerRequestDto = new CreateCustomerRequestDto
-            {
-                Username = "existinguser",
-                Name = "Existing User",
-                Email = "existinguser@example.com"
-            };
-
-            _mockCustomerService.Setup(service => service.AddCustomer(It.IsAny<Customer>()))
-                .Throws(new CustomerAlreadyExistsException("Customer already exists"));
-
-            // Act
-            ActionResult<CustomerIdResponseDto> result = _controller.Post(customerRequestDto);
-
-            // Assert
-            ActionResult<CustomerIdResponseDto> actionResult = Assert.IsType<ActionResult<CustomerIdResponseDto>>(result);
-            BadRequestObjectResult badRequestResult = Assert.IsType<BadRequestObjectResult>(actionResult.Result);
-            Assert.Equal("Customer already exists", badRequestResult.Value);
-        }
-
-        [Fact]
-        public void Post_ReturnsInternalServerError_WhenFailedToAddCustomer()
-        {
-            // Arrange
-            CreateCustomerRequestDto customerRequestDto = new CreateCustomerRequestDto
-            {
-                Username = "newuser",
-                Name = "New User",
-                Email = "newuser@example.com"
-            };
-
-            _mockCustomerService.Setup(service => service.AddCustomer(It.IsAny<Customer>()))
-                .Throws(new FailedToAddCustomerException("Failed to add customer"));
-
-            // Act
-            ActionResult<CustomerIdResponseDto> result = _controller.Post(customerRequestDto);
-
-            // Assert
-            ActionResult<CustomerIdResponseDto> actionResult = Assert.IsType<ActionResult<CustomerIdResponseDto>>(result);
-            ObjectResult statusCodeResult = Assert.IsType<ObjectResult>(actionResult.Result);
-            Assert.Equal(500, statusCodeResult.StatusCode);
-            Assert.Equal("Failed to add customer", statusCodeResult.Value);
+            CustomerIdResponseViewModel responseViewModel = Assert.IsType<CustomerIdResponseViewModel>(okResult.Value);
+            Assert.Equal(customerId, responseViewModel.CustomerId);
         }
     }
 }

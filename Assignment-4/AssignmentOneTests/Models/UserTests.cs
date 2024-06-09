@@ -12,11 +12,11 @@ namespace AssignmentOneTests.Models
         public void Constructor_InitializesPropertiesCorrectly()
         {
             // Arrange
-            var name = "Test User";
-            var userType = UserType.Student;
+            String name = "Test User";
+            UserType userType = UserType.Student;
 
             // Act
-            var user = new User(name, userType);
+            User user = new User(name, userType);
 
             // Assert
             Assert.Equal(name, user.Name);
@@ -30,8 +30,8 @@ namespace AssignmentOneTests.Models
         public void AddBookToIssuedBooks_AddsBookCorrectly()
         {
             // Arrange
-            var user = new User("Test User", UserType.Student);
-            var book = new Book("Test Title", "Test Author", 10);
+            User user = new User("Test User", UserType.Student);
+            Book book = new Book("Test Title", "Test Author", 10);
 
             // Act
             user.IssuedBooks.Add(book);
@@ -45,8 +45,8 @@ namespace AssignmentOneTests.Models
         public void RemoveBookFromIssuedBooks_RemovesBookCorrectly()
         {
             // Arrange
-            var user = new User("Test User", UserType.Student);
-            var book = new Book("Test Title", "Test Author", 10);
+            User user = new User("Test User", UserType.Student);
+            Book book = new Book("Test Title", "Test Author", 10);
             user.IssuedBooks.Add(book);
 
             // Act

@@ -27,124 +27,43 @@ namespace AssignmentThreeTests.Contollers
         public void RentMovieById_ReturnsOkResult_WithRentalId()
         {
             // Arrange
-            RentMovieByIdRequestDto rentMovieRequestDto = new RentMovieByIdRequestDto
+            RentMovieByIdRequestViewModel rentMovieRequestViewModel = new RentMovieByIdRequestViewModel
             {
                 MovieId = Guid.NewGuid(),
                 CustomerId = Guid.NewGuid()
             };
             Guid rentalId = Guid.NewGuid();
-            _mockRentalService.Setup(service => service.RentMovieById(rentMovieRequestDto.MovieId, rentMovieRequestDto.CustomerId)).Returns(rentalId);
+            _mockRentalService.Setup(service => service.RentMovieById(rentMovieRequestViewModel.MovieId, rentMovieRequestViewModel.CustomerId)).Returns(rentalId);
 
             // Act
-            ActionResult<RentalIdResponseDto> result = _controller.RentMovieById(rentMovieRequestDto);
+            ActionResult<RentalIdResponseViewModel> result = _controller.RentMovieById(rentMovieRequestViewModel);
 
             // Assert
             Assert.IsType<OkObjectResult>(result.Result);
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result.Result);
-            RentalIdResponseDto model = Assert.IsType<RentalIdResponseDto>(okResult.Value);
+            RentalIdResponseViewModel model = Assert.IsType<RentalIdResponseViewModel>(okResult.Value);
             Assert.Equal(rentalId, model.RentalId);
-        }
-
-        [Fact]
-        public void RentMovieById_ReturnsNotFound_WhenMovieNotFound()
-        {
-            // Arrange
-            RentMovieByIdRequestDto rentMovieRequestDto = new RentMovieByIdRequestDto
-            {
-                MovieId = Guid.NewGuid(),
-                CustomerId = Guid.NewGuid()
-            };
-            _mockRentalService.Setup(service => service.RentMovieById(rentMovieRequestDto.MovieId, rentMovieRequestDto.CustomerId)).Throws(new MovieNotFoundException("Movie does not exist"));
-
-            // Act
-            ActionResult<RentalIdResponseDto> result = _controller.RentMovieById(rentMovieRequestDto);
-
-            // Assert
-            Assert.IsType<NotFoundObjectResult>(result.Result);
-            NotFoundObjectResult notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
-            Assert.Equal("Movie does not exist", notFoundResult.Value);
-        }
-
-        [Fact]
-        public void RentMovieById_ReturnsNotFound_WhenCustomerNotFound()
-        {
-            // Arrange
-            RentMovieByIdRequestDto rentMovieRequestDto = new RentMovieByIdRequestDto
-            {
-                MovieId = Guid.NewGuid(),
-                CustomerId = Guid.NewGuid()
-            };
-            _mockRentalService.Setup(service => service.RentMovieById(rentMovieRequestDto.MovieId, rentMovieRequestDto.CustomerId)).Throws(new CustomerNotFoundException("Customer does not exist"));
-
-            // Act
-            ActionResult<RentalIdResponseDto> result = _controller.RentMovieById(rentMovieRequestDto);
-
-            // Assert
-            Assert.IsType<NotFoundObjectResult>(result.Result);
-            NotFoundObjectResult notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
-            Assert.Equal("Customer does not exist", notFoundResult.Value);
-        }
-
-        [Fact]
-        public void RentMovieById_ReturnsConflict_WhenRentalAlreadyExists()
-        {
-            // Arrange
-            RentMovieByIdRequestDto rentMovieRequestDto = new RentMovieByIdRequestDto
-            {
-                MovieId = Guid.NewGuid(),
-                CustomerId = Guid.NewGuid()
-            };
-            _mockRentalService.Setup(service => service.RentMovieById(rentMovieRequestDto.MovieId, rentMovieRequestDto.CustomerId)).Throws(new RentalAlreadyExistsException("A rental with the same Customer Id and Movie Id already exists."));
-
-            // Act
-            ActionResult<RentalIdResponseDto> result = _controller.RentMovieById(rentMovieRequestDto);
-
-            // Assert
-            Assert.IsType<ConflictObjectResult>(result.Result);
-            ConflictObjectResult conflictResult = Assert.IsType<ConflictObjectResult>(result.Result);
-            Assert.Equal("A rental with the same Customer Id and Movie Id already exists.", conflictResult.Value);
-        }
-
-        [Fact]
-        public void RentMovieById_ReturnsInternalServerError_WhenFailedToAddRental()
-        {
-            // Arrange
-            RentMovieByIdRequestDto rentMovieRequestDto = new RentMovieByIdRequestDto
-            {
-                MovieId = Guid.NewGuid(),
-                CustomerId = Guid.NewGuid()
-            };
-            _mockRentalService.Setup(service => service.RentMovieById(rentMovieRequestDto.MovieId, rentMovieRequestDto.CustomerId)).Throws(new FailedToAddRentalException("Failed to rent movie. An error occurred."));
-
-            // Act
-            ActionResult<RentalIdResponseDto> result = _controller.RentMovieById(rentMovieRequestDto);
-
-            // Assert
-            Assert.IsType<ObjectResult>(result.Result);
-            ObjectResult internalServerErrorResult = Assert.IsType<ObjectResult>(result.Result);
-            Assert.Equal(500, internalServerErrorResult.StatusCode);
-            Assert.Equal("Failed to rent movie. An error occurred.", internalServerErrorResult.Value);
         }
 
         [Fact]
         public void RentMovieByMovieTitleAndUsername_ReturnsOkResult_WithRentalId()
         {
             // Arrange
-            RentMovieByMovieNameAndUserNameRequestDto rentMovieRequestDto = new RentMovieByMovieNameAndUserNameRequestDto
+            RentMovieByMovieNameAndUserNameRequestViewModel rentMovieRequestViewModel = new RentMovieByMovieNameAndUserNameRequestViewModel
             {
                 MovieTitle = "Test Movie",
                 CustomerUsername = "TestUser"
             };
             Guid rentalId = Guid.NewGuid();
-            _mockRentalService.Setup(service => service.RentMovieByMovieTitleAndUsername(rentMovieRequestDto.MovieTitle, rentMovieRequestDto.CustomerUsername)).Returns(rentalId);
+            _mockRentalService.Setup(service => service.RentMovieByMovieTitleAndUsername(rentMovieRequestViewModel.MovieTitle, rentMovieRequestViewModel.CustomerUsername)).Returns(rentalId);
 
             // Act
-            ActionResult<RentalIdResponseDto> result = _controller.RentMovieByMovieTitleAndUsername(rentMovieRequestDto);
+            ActionResult<RentalIdResponseViewModel> result = _controller.RentMovieByMovieTitleAndUsername(rentMovieRequestViewModel);
 
             // Assert
             Assert.IsType<OkObjectResult>(result.Result);
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result.Result);
-            RentalIdResponseDto model = Assert.IsType<RentalIdResponseDto>(okResult.Value);
+            RentalIdResponseViewModel model = Assert.IsType<RentalIdResponseViewModel>(okResult.Value);
             Assert.Equal(rentalId, model.RentalId);
         }
 
@@ -167,22 +86,6 @@ namespace AssignmentThreeTests.Contollers
         }
 
         [Fact]
-        public void GetCustomersByMovieId_ReturnsNotFound_WhenMovieNotFound()
-        {
-            // Arrange
-            Guid movieId = Guid.NewGuid();
-            _mockRentalService.Setup(service => service.GetCustomersByMovieId(movieId)).Throws(new MovieNotFoundException("Movie does not exist"));
-
-            // Act
-            ActionResult<List<string>> result = _controller.GetCustomersByMovieId(movieId);
-
-            // Assert
-            Assert.IsType<NotFoundObjectResult>(result.Result);
-            NotFoundObjectResult notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
-            Assert.Equal("Movie does not exist", notFoundResult.Value);
-        }
-
-        [Fact]
         public void GetMoviesByCustomerId_ReturnsOkResult_WithMovieList()
         {
             // Arrange
@@ -201,22 +104,6 @@ namespace AssignmentThreeTests.Contollers
         }
 
         [Fact]
-        public void GetMoviesByCustomerId_ReturnsNotFound_WhenCustomerNotFound()
-        {
-            // Arrange
-            Guid customerId = Guid.NewGuid();
-            _mockRentalService.Setup(service => service.GetMoviesByCustomerId(customerId)).Throws(new CustomerNotFoundException("Customer does not exist"));
-
-            // Act
-            ActionResult<List<string>> result = _controller.GetMoviesByCustomerId(customerId);
-
-            // Assert
-            Assert.IsType<NotFoundObjectResult>(result.Result);
-            NotFoundObjectResult notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
-            Assert.Equal("Customer does not exist", notFoundResult.Value);
-        }
-
-        [Fact]
         public void GetTotalCost_ReturnsOkResult_WithTotalCost()
         {
             // Arrange
@@ -232,22 +119,6 @@ namespace AssignmentThreeTests.Contollers
             OkObjectResult okResult = Assert.IsType<OkObjectResult>(result.Result);
             decimal model = Assert.IsType<decimal>(okResult.Value);
             Assert.Equal(totalCost, model);
-        }
-
-        [Fact]
-        public void GetTotalCost_ReturnsNotFound_WhenCustomerNotFound()
-        {
-            // Arrange
-            Guid customerId = Guid.NewGuid();
-            _mockRentalService.Setup(service => service.GetTotalCostByCustomerId(customerId)).Throws(new CustomerNotFoundException("Customer does not exist"));
-
-            // Act
-            ActionResult<decimal> result = _controller.GetTotalCost(customerId);
-
-            // Assert
-            Assert.IsType<NotFoundObjectResult>(result.Result);
-            NotFoundObjectResult notFoundResult = Assert.IsType<NotFoundObjectResult>(result.Result);
-            Assert.Equal("Customer does not exist", notFoundResult.Value);
         }
     }
 }

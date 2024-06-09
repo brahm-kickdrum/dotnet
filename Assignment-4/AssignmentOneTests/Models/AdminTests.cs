@@ -35,7 +35,7 @@
             Admin admin = new Admin("admin", "password");
 
             // Act
-            var result = admin.Authenticate("admin", "wrongPassword");
+            bool result = admin.Authenticate("admin", "wrongPassword");
 
             // Assert
             Assert.False(result);
