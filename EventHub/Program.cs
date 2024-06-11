@@ -1,16 +1,19 @@
+using EventHub.ExtensionMethods;
 using EventHub.Middlewares;
 using EventHub.Services.Implementations;
 using EventHub.Services.IServices;
 
+namespace EventHub
+{
+    public class Program
+    {
+        static void Main(string[] args) { 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddScoped<GlobalExceptionHandlingMiddleware>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddScoped<IKeyVaultService, KeyVaultService>();
-builder.Services.AddScoped<IEventProcessorService, EventProcessorService>();
-builder.Services.AddScoped<IEventProducerService, EventProducerService>();
+builder.Services.AddServices();
 
 var app = builder.Build();
 
@@ -29,3 +32,6 @@ app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 app.MapControllers();
 
 app.Run();
+}
+    }
+}

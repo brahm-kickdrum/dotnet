@@ -17,7 +17,6 @@ namespace EventHub.Middlewares
         {
             try
             {
-                throw new Exception("kjwbefhbj");
                 await next(context);
             }
             catch (Exception ex)
