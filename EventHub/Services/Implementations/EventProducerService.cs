@@ -1,5 +1,6 @@
 ﻿using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Producer;
+using EventHub.Exceptions;
 using EventHub.Services.IServices;
 using Microsoft.AspNetCore.Components.Web;
 using System.Runtime.InteropServices;
@@ -20,6 +21,11 @@ namespace EventHub.Services.Implementations
         {
             string connectionString = await _keyVaultService.RetrieveSecretAsync("EventHubSendConnectionString");
             string eventHubName = await _keyVaultService.RetrieveSecretAsync("EventHubSendName");
+
+            if (string.IsNullOrEmpty(connectionString) || string.IsNullOrEmpty(eventHubName))
+            {
+                throw new ConfigurationException("Oops! It looks like something went wrong while trying to connect.");
+            }
 
             await using (var producerClient = new EventHubProducerClient(connectionString, eventHubName))
             {

@@ -1,4 +1,5 @@
-﻿using EventHub.Services.IServices;
+﻿using EventHub.Exceptions;
+using EventHub.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventHub.Controllers
@@ -17,8 +18,19 @@ namespace EventHub.Controllers
         [HttpPost]
         public async Task<ActionResult<string>> Post(int n)
         {
-            string result = await _eventProducerService.SendEventsAsync(n);
-            return Ok(result);
+            try
+            {
+                string result = await _eventProducerService.SendEventsAsync(n);
+                return Ok(result);
+            }
+            catch (ConfigurationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            catch (KeyVaultOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
     }
 }

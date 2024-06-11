@@ -1,4 +1,5 @@
-﻿using EventHub.Services.Implementations;
+﻿using EventHub.Exceptions;
+using EventHub.Services.Implementations;
 using EventHub.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,15 +21,37 @@ namespace EventHub.Controllers
         [HttpPost("start")]
         public async Task<ActionResult<string>> StartProcessing()
         {
-            string result = await _eventProcessorService.StartProcessingAsync();
-            return Ok(result);
+            try
+            {
+                string result = await _eventProcessorService.StartProcessingAsync();
+                return Ok(result);
+            }
+            catch (ConfigurationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            catch (KeyVaultOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
         [HttpPost("stop")]
         public async Task<ActionResult<string>> StopProcessing()
         {
-            string result = await _eventProcessorService.StopProcessingAsync();
-            return Ok(result);
+            try
+            {
+                string result = await _eventProcessorService.StopProcessingAsync();
+                return Ok(result);
+            }
+            catch (ConfigurationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            catch (KeyVaultOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
         }
 
     }
