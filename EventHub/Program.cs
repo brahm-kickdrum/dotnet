@@ -7,31 +7,32 @@ namespace EventHub
 {
     public class Program
     {
-        static void Main(string[] args) { 
-var builder = WebApplication.CreateBuilder(args);
+        static void Main(string[] args) 
+        { 
+            var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-builder.Services.AddServices();
+            builder.Services.AddControllers();
+            builder.Services.AddEndpointsApiExplorer();
+            builder.Services.AddSwaggerGen();
+            builder.Services.AddServices();
 
-var app = builder.Build();
+            var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+            if (app.Environment.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI();
+            }
 
-app.UseHttpsRedirection();
+            app.UseHttpsRedirection();
 
-app.UseAuthorization();
+            app.UseAuthorization();
 
-app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
+            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
-app.MapControllers();
+            app.MapControllers();
 
-app.Run();
-}
+            app.Run();
+        }
     }
 }

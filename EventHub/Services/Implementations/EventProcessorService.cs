@@ -6,6 +6,7 @@ using EventHub.Services.IServices;
 using System.Text;
 using Serilog;
 using EventHub.Exceptions;
+using Microsoft.AspNetCore.Mvc.Diagnostics;
 
 namespace EventHub.Services.Implementations
 {
@@ -13,11 +14,13 @@ namespace EventHub.Services.Implementations
     {
         private readonly IKeyVaultService _keyVaultService;
         private readonly EventProcessorClient _processor;
+        private readonly ILogger<EventProcessorService> _logger;
 
-        public EventProcessorService(IKeyVaultService keyVaultService)
+        public EventProcessorService(IKeyVaultService keyVaultService, ILogger<EventProcessorService> logger)
         {
             _keyVaultService = keyVaultService;
             _processor = InitializeProcessorAsync().GetAwaiter().GetResult();
+            _logger = logger;
         }
 
         private async Task<EventProcessorClient> InitializeProcessorAsync()
@@ -57,15 +60,14 @@ namespace EventHub.Services.Implementations
 
         private async Task ProcessEventHandler(ProcessEventArgs eventArgs)
         {
-            Console.WriteLine("\tReceived event: {0}", Encoding.UTF8.GetString(eventArgs.Data.Body.ToArray()));
-            Log.Information(Encoding.UTF8.GetString(eventArgs.Data.Body.ToArray()));
+            string eventData = Encoding.UTF8.GetString(eventArgs.Data.Body.ToArray());
+            _logger.LogInformation("Received event: {EventData}", eventData);
             await eventArgs.UpdateCheckpointAsync(eventArgs.CancellationToken);
         }
 
         private Task ProcessErrorHandler(ProcessErrorEventArgs eventArgs)
         {
-            Console.WriteLine($"\tPartition '{eventArgs.PartitionId}': an unhandled exception was encountered. This was not expected to happen.");
-            Console.WriteLine(eventArgs.Exception.Message);
+            _logger.LogError(eventArgs.Exception, $"Error processing event from partition {eventArgs.PartitionId}", eventArgs.PartitionId);
             return Task.CompletedTask;
         }
     }
