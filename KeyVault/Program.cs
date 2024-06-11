@@ -1,4 +1,6 @@
 using Azure.Security.KeyVault.Secrets;
+using KeyVault.ExtensionMethods;
+using KeyVault.Middlewares;
 using KeyVault.Services;
 using KeyVault.Services.IService;
 
@@ -8,13 +10,12 @@ namespace KeyVault
     {
         static void Main(string[] args)
         {
-
             var builder = WebApplication.CreateBuilder(args);
 
             builder.Services.AddControllers();
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
-            builder.Services.AddScoped<IKeyVaultService, KeyVaultService>();
+            builder.Services.AddServices();
 
             var app = builder.Build();
 
@@ -27,6 +28,8 @@ namespace KeyVault
             app.UseHttpsRedirection();
 
             app.UseAuthorization();
+
+            app.UseMiddleware<GlobalExceptionHandlingMiddleware>();
 
             app.MapControllers();
 
