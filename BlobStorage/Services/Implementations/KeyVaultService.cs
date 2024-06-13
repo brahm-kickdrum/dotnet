@@ -1,5 +1,6 @@
 ﻿using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using BlobStorage.Constants;
 using BlobStorage.Exceptions;
 using BlobStorage.Services.IServices;
 
@@ -11,14 +12,14 @@ namespace BlobStorage.Services.Implementations
 
         public KeyVaultService()
         {
-            string? keyVaultName = Environment.GetEnvironmentVariable("KEY_VAULT_NAME");
+            string? keyVaultName = Environment.GetEnvironmentVariable(AppConstants.KeyVaultName);
 
             if (string.IsNullOrEmpty(keyVaultName))
             {
-                throw new ConfigurationException("Please set the KEY_VAULT_NAME environment variable.");
+                throw new ConfigurationException(ErrorMessages.EnvironmentVariableError);
             }
 
-            string kvUri = $"https://{keyVaultName}.vault.azure.net";
+            string kvUri = string.Format(AppConstants.KeyVaultUri, keyVaultName);
             _secretClient = new SecretClient(new Uri(kvUri), new DefaultAzureCredential());
         }
 
@@ -31,7 +32,7 @@ namespace BlobStorage.Services.Implementations
             }
             catch (Exception)
             {
-                throw new KeyVaultOperationException("Secret not found");
+                throw new KeyVaultOperationException(ErrorMessages.SecretNotFoundError);
             }
         }
     }

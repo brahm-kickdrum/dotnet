@@ -1,14 +1,17 @@
-﻿using BlobStorage.Enums;
+﻿using BlobStorage.Constants;
+using BlobStorage.Enums;
 using System.ComponentModel.DataAnnotations;
 
 namespace BlobStorage.Models.Request
 {
     public class SetAccessPolicyRequest
     {
-        [Required(ErrorMessage = "Container name is required")]
+        [Required]
+        [RegularExpression(AppConstants.ContainerNameRegex, ErrorMessage = ErrorMessages.ContainerNameError)]
+        [StringLength(63, MinimumLength = 3, ErrorMessage = ErrorMessages.ContainerNameLengthError)]
         public string ContainerName { get; set; }
 
-        [Required(ErrorMessage = "Access level is required")]
+        [Required]
         public BlobAccessLevel AccessLevel { get; set; }
     }
 }

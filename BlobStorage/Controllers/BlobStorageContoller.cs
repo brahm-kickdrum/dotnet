@@ -1,4 +1,5 @@
-﻿using BlobStorage.Exceptions;
+﻿using BlobStorage.Constants;
+using BlobStorage.Exceptions;
 using BlobStorage.Models.Request;
 using BlobStorage.Models.Response;
 using BlobStorage.Services.IServices;
@@ -7,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace BlobStorage.Controllers
 {
-    [Route("api/blob-storage")]
+    [Route(RouteConstants.BlobStorageApi)]
     [ApiController]
     public class BlobStorageContoller : ControllerBase
     {
@@ -18,7 +19,7 @@ namespace BlobStorage.Controllers
             _blobStorageService = blobStorageService;
         }
 
-        [HttpPost("create-container")]
+        [HttpPost(RouteConstants.CreateContainer)]
         public async Task<ActionResult<string>> CreateContainer(CreateContainerRequest createContainerRequest)
         {
             try
@@ -40,7 +41,7 @@ namespace BlobStorage.Controllers
             }
         }
 
-        [HttpPost("set-access-policy")]
+        [HttpPost(RouteConstants.SetAccessPolicy)]
         public async Task<ActionResult<string>> SetAccessPolicy(SetAccessPolicyRequest setAccessPolicyRequest)
         {
             try
@@ -62,7 +63,7 @@ namespace BlobStorage.Controllers
             }
         }
 
-        [HttpPost("upload-blob")]
+        [HttpPost(RouteConstants.UploadBlob)]
         public async Task<ActionResult<string>> UploadFile(UploadFileRequest uploadFileRequest)
         {
             try
@@ -84,7 +85,7 @@ namespace BlobStorage.Controllers
             }
         }
 
-        [HttpGet("list-blobs")]
+        [HttpGet(RouteConstants.ListBlobs)]
         public async Task<ActionResult<ListBlobsResponse>> ListBlobs([FromQuery] ListBlobsRequest listBlobsRequest)
         {
             try
@@ -106,7 +107,7 @@ namespace BlobStorage.Controllers
             }
         }
 
-        [HttpPost("download-blobs")]
+        [HttpPost(RouteConstants.DownloadBlobs)]
         public async Task<ActionResult<string>> DownloadBlobs(DownloadBlobRequest downloadBlobRequest)
         {
             try
@@ -128,7 +129,7 @@ namespace BlobStorage.Controllers
             }
         }
 
-        [HttpPost("delete-container")]
+        [HttpDelete(RouteConstants.DeleteContainer)]
         public async Task<ActionResult<string>> DeleteContainer(DeleteContainerRequest deleteContainerRequest)
         {
             try
@@ -150,7 +151,7 @@ namespace BlobStorage.Controllers
             }
         }
 
-        [HttpPost("delete-blob")]
+        [HttpDelete(RouteConstants.DeleteBlob)]
         public async Task<ActionResult<string>> DeleteBlob(DeleteBlobRequest deleteBlobRequest)
         {
             try

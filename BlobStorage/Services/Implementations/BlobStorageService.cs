@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using BlobStorage.Constants;
 using BlobStorage.Enums;
 using BlobStorage.Exceptions;
 using BlobStorage.Models.Request;
@@ -18,7 +19,7 @@ namespace BlobStorage.Services.Implementations
         public BlobStorageService(IKeyVaultService keyVaultService)
         {
             _keyVaultService = keyVaultService;
-            string connectionString = GetStorageConnectionStringBySecretName("BlobStorageConnectionString").GetAwaiter().GetResult();
+            string connectionString = GetStorageConnectionStringBySecretName(AppConstants.BlobStorageConnectionString).GetAwaiter().GetResult();
             _blobServiceClient = new BlobServiceClient(connectionString);
         }
 
@@ -30,7 +31,7 @@ namespace BlobStorage.Services.Implementations
             }
             catch (Exception)
             {
-                throw new ConfigurationException("Oops! It looks like something went wrong while trying to connect.");
+                throw new ConfigurationException(ErrorMessages.RetrieveSecretError);
             }
         }
 
@@ -40,12 +41,12 @@ namespace BlobStorage.Services.Implementations
             {
                 string containerName = createContainerRequest.ContainerName;
                 BlobContainerClient containerClient = await _blobServiceClient.CreateBlobContainerAsync(containerName);
-                
-                return $"Container {createContainerRequest.ContainerName} created successfully.";
+
+                return string.Format(ResponseMessages.ContainerCreatedSuccessfully ,createContainerRequest.ContainerName);
             }
             catch (Exception)
             {
-                throw new BlobStorageOperationException($"An error occurred while creating container '{createContainerRequest.ContainerName}'");
+                throw new BlobStorageOperationException(string.Format(ErrorMessages.ContainerCreationError, createContainerRequest.ContainerName));
             }
         }
 
@@ -54,16 +55,16 @@ namespace BlobStorage.Services.Implementations
             try
             {
                 BlobContainerClient? containerClient = GetBlobContainerClientByContainerName(setAccessPolicyRequest.ContainerName);
-
                 PublicAccessType accessType = BlobAccessLevelConverter.ConvertToPublicAccessType(setAccessPolicyRequest.AccessLevel);
 
                 await containerClient.SetAccessPolicyAsync(accessType);
 
-                return $"Access policy for container {setAccessPolicyRequest.ContainerName} is set to {accessType}";
+                return string.Format(ResponseMessages.AccessPolicySetSuccessfully, setAccessPolicyRequest.ContainerName, accessType);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new BlobStorageOperationException($"An error occurred while setting access policy for container '{setAccessPolicyRequest.ContainerName}'");
+                throw new BlobStorageOperationException(ex.Message);
+                //throw new BlobStorageOperationException(string.Format(ErrorMessages.AccessPolicyError, setAccessPolicyRequest.ContainerName));
             }
         }
 
@@ -71,9 +72,9 @@ namespace BlobStorage.Services.Implementations
         {
             try
             {
-                if(!File.Exists(uploadFileRequest.LocalFilePath))
+                if (!File.Exists(uploadFileRequest.LocalFilePath))
                 {
-                    throw new BlobStorageOperationException($"File not found at {uploadFileRequest.LocalFilePath}.");
+                    throw new BlobStorageOperationException(string.Format(ErrorMessages.FileNotFoundError, uploadFileRequest.LocalFilePath));
                 }
 
                 BlobContainerClient containerClient = GetBlobContainerClientByContainerName(uploadFileRequest.ContainerName);
@@ -87,7 +88,7 @@ namespace BlobStorage.Services.Implementations
             }
             catch (Exception)
             {
-                throw new BlobStorageOperationException($"An error occurred while uploading file to container '{uploadFileRequest.ContainerName}'");
+                throw new BlobStorageOperationException(string.Format(ErrorMessages.UploadFileError, uploadFileRequest.ContainerName));
             }
         }
 
@@ -107,7 +108,7 @@ namespace BlobStorage.Services.Implementations
             }
             catch (Exception)
             {
-                throw new BlobStorageOperationException($"Failed to list blobs in container {listBlobsRequest.ContainerName}.");
+                throw new BlobStorageOperationException(string.Format(ErrorMessages.ListBlobsError, listBlobsRequest.ContainerName));
             }
         }
 
@@ -122,9 +123,9 @@ namespace BlobStorage.Services.Implementations
 
                 if (directory == null)
                 {
-                    throw new BlobStorageOperationException($"Invalid local file path: {downloadBlobRequest.LocalFilePath}.");
+                    throw new BlobStorageOperationException(string.Format(ErrorMessages.InvalidFilePathError, downloadBlobRequest.LocalFilePath));
                 }
-                else if(!Directory.Exists(directory))
+                else if (!Directory.Exists(directory))
                 {
                     Directory.CreateDirectory(directory);
                 }
@@ -135,7 +136,7 @@ namespace BlobStorage.Services.Implementations
             }
             catch (Exception)
             {
-                throw new BlobStorageOperationException("Failed to download blob.");
+                throw new BlobStorageOperationException(ErrorMessages.DownloadBlobError);
             }
         }
 
@@ -147,11 +148,11 @@ namespace BlobStorage.Services.Implementations
 
                 await containerClient.DeleteIfExistsAsync();
 
-                return $"Container {deleteContainerRequest.ContainerName} deleted successfully.";
+                return string.Format(ResponseMessages.ContainerDeletedSuccessfully, deleteContainerRequest.ContainerName);
             }
             catch (Exception)
             {
-                throw new BlobStorageOperationException($"An error occurred while deleting container {deleteContainerRequest.ContainerName}");
+                throw new BlobStorageOperationException(string.Format(ErrorMessages.ContainerDeletionError, deleteContainerRequest.ContainerName));
             }
         }
 
@@ -164,11 +165,11 @@ namespace BlobStorage.Services.Implementations
 
                 await blobClient.DeleteIfExistsAsync();
 
-                return $"Blob {deleteBlobRequest.BlobName} deleted successfully.";
+                return string.Format(ResponseMessages.BlobDeletedSuccessfully, deleteBlobRequest.BlobName);
             }
             catch (Exception)
             {
-                throw new BlobStorageOperationException($"An error occurred while deleting blob {deleteBlobRequest.BlobName}");
+                throw new BlobStorageOperationException(string.Format(ErrorMessages.BlobDeletionError, deleteBlobRequest.BlobName));
             }
         }
 
@@ -178,9 +179,9 @@ namespace BlobStorage.Services.Implementations
             {
                 return _blobServiceClient.GetBlobContainerClient(containerName);
             }
-            catch (Exception)    
+            catch (Exception)
             {
-                throw new BlobStorageOperationException($"An error occurred while getting BlobContainerClient for container '{containerName}'");
+                throw new BlobStorageOperationException(string.Format(ErrorMessages.ContainerClientError, containerName));
             }
         }
 
@@ -192,7 +193,7 @@ namespace BlobStorage.Services.Implementations
             }
             catch (Exception)
             {
-                throw new BlobStorageOperationException($"An error occurred while getting BlobClient for file '{fileName}' in container '{containerClient.Name}'");
+                throw new BlobStorageOperationException(string.Format(ErrorMessages.BlobClientError, fileName, containerClient.Name));
             }
         }
 

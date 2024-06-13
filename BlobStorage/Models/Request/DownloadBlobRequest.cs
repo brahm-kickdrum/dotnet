@@ -1,16 +1,19 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BlobStorage.Constants;
+using System.ComponentModel.DataAnnotations;
 
 namespace BlobStorage.Models.Request
 {
     public class DownloadBlobRequest
     {
-        [Required(ErrorMessage = "Container name is required")]
+        [Required]
+        [RegularExpression(AppConstants.ContainerNameRegex, ErrorMessage = ErrorMessages.ContainerNameError)]
+        [StringLength(63, MinimumLength = 3, ErrorMessage = ErrorMessages.ContainerNameLengthError)]
         public string ContainerName { get; set; }
 
-        [Required(ErrorMessage = "Blob name is required")]
+        [Required]
         public string BlobName { get; set; }
 
-        [Required(ErrorMessage = "Local file path is required")]
+        [Required]
         public string LocalFilePath { get; set; }
     }
 }

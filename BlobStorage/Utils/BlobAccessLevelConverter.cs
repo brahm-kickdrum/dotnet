@@ -1,4 +1,5 @@
 ﻿using Azure.Storage.Blobs.Models;
+using BlobStorage.Constants;
 using BlobStorage.Enums;
 using BlobStorage.Exceptions;
 
@@ -17,7 +18,7 @@ namespace BlobStorage.Utils
                 case BlobAccessLevel.Container:
                     return PublicAccessType.BlobContainer;
                 default:
-                    throw new BlobStorageOperationException("Invalid access level specified.");
+                    throw new BlobStorageOperationException(ErrorMessages.AccessLevelError);
             }
         }
     }

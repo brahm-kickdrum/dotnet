@@ -1,10 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using BlobStorage.Constants;
+using System.ComponentModel.DataAnnotations;
 
 namespace BlobStorage.Models.Request
 {
     public class DeleteContainerRequest
     {
-        [Required(ErrorMessage = "Container name is required")]
+        [Required]
+        [RegularExpression(AppConstants.ContainerNameRegex, ErrorMessage = ErrorMessages.ContainerNameError)]
+        [StringLength(63, MinimumLength = 3, ErrorMessage = ErrorMessages.ContainerNameLengthError)]
         public string ContainerName { get; set; }
     }
 }
