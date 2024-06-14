@@ -1,8 +1,9 @@
 ﻿using Azure;
 using Azure.Identity;
 using Azure.Security.KeyVault.Secrets;
+using KeyVault.Constants;
 using KeyVault.Exceptions;
-using KeyVault.Models;
+using KeyVault.Models.Requests;
 using KeyVault.Services.IService;
 
 namespace KeyVault.Services
@@ -13,69 +14,69 @@ namespace KeyVault.Services
 
         public KeyVaultService()
         {
-            string? keyVaultName = Environment.GetEnvironmentVariable("KEY_VAULT_NAME");
+            string? keyVaultName = Environment.GetEnvironmentVariable(AppConstants.KeyVaultName);
 
             if (string.IsNullOrEmpty(keyVaultName))
             {
-                throw new ConfigurationException("Please set the KEY_VAULT_NAME environment variable.");
+                throw new ConfigurationException(ErrorMessages.KeyVaultNameNotSet);
             }
 
-            string kvUri = $"https://{keyVaultName}.vault.azure.net";
+            string kvUri = string.Format(AppConstants.KeyVaultUri, keyVaultName);
             _secretClient = new SecretClient(new Uri(kvUri), new DefaultAzureCredential());
         }
 
-        public async Task<string> CreateSecretAsync(SecretCreateRequest secretCreateRequest)
+        public async Task<string> CreateSecretBySecretNameAndValueAsync(SecretCreateRequest secretCreateRequest)
         {
             try
             {
                 KeyVaultSecret secret = new KeyVaultSecret(secretCreateRequest.SecretName, secretCreateRequest.SecretValue);
                 await _secretClient.SetSecretAsync(secret);
-                return $"Secret '{secretCreateRequest.SecretName}' created successfully.";
+                return string.Format(ResponseMessages.SecretCreated, secretCreateRequest.SecretName);
             }
             catch (Exception)
             {
-                throw new KeyVaultOperationException("Error creating secret");
+                throw new KeyVaultOperationException(ErrorMessages.SecretCreationError);
             }
         }
 
-        public async Task<string> RetrieveSecretAsync(string secretName)
+        public async Task<string> RetrieveSecretBySecretNameAsync(SecretRetrieveRequest secretRetrieveRequest)
         {
             try
             {
-                KeyVaultSecret secret = await _secretClient.GetSecretAsync(secretName);
+                KeyVaultSecret secret = await _secretClient.GetSecretAsync(secretRetrieveRequest.SecretName);
                 return secret.Value;
             }
             catch (Exception)
             {
-                throw new KeyVaultOperationException("Secret not found");
+                throw new KeyVaultOperationException(ErrorMessages.SecretNotFoundError);
             }
         }
 
-        public async Task<string> DeleteSecretAsync(string secretName)
+        public async Task<string> DeleteSecretBySecretNameAsync(SecretDeleteRequest secretDeleteRequest)
         {
             try
             {
-                DeleteSecretOperation operation = await _secretClient.StartDeleteSecretAsync(secretName);
+                DeleteSecretOperation operation = await _secretClient.StartDeleteSecretAsync(secretDeleteRequest.SecretName);
                 await operation.WaitForCompletionAsync();
-                return $"Secret '{secretName}' deleted successfully.";
+                return string.Format(ResponseMessages.SecretDeleted, secretDeleteRequest.SecretName);
             }
             catch (Exception)
             {
-                throw new KeyVaultOperationException("Error deleting secret");
+                throw new KeyVaultOperationException(ErrorMessages.SecretDeletionError);
             }
         }
 
-        public async Task<string> PurgeSecretAsync(string secretName)
+        public async Task<string> PurgeSecretBySecretNameAsync(SecretPurgeRequest secretPurgeRequest)
         {
             try
             {
-                await _secretClient.PurgeDeletedSecretAsync(secretName);
-                return $"Secret '{secretName}' purged successfully.";
+                await _secretClient.PurgeDeletedSecretAsync(secretPurgeRequest.SecretName);
+                return string.Format(ResponseMessages.SecretPurged, secretPurgeRequest.SecretName);
             }
             catch (RequestFailedException ex)
             {
                 await Console.Out.WriteLineAsync(ex.Message);
-                throw new KeyVaultOperationException("Error purging secret");
+                throw new KeyVaultOperationException(ErrorMessages.SecretPurgeError);
             }
         }
     }

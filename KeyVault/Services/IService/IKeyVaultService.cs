@@ -1,15 +1,15 @@
-﻿using KeyVault.Models;
+﻿using KeyVault.Models.Requests;
 
 namespace KeyVault.Services.IService
 {
     public interface IKeyVaultService
     {
-        Task<string> CreateSecretAsync(SecretCreateRequest secretCreateRequest);
+        Task<string> CreateSecretBySecretNameAndValueAsync(SecretCreateRequest secretCreateRequest);
 
-        Task<string> RetrieveSecretAsync(string secretName);
+        Task<string> RetrieveSecretBySecretNameAsync(SecretRetrieveRequest secretRetrieveRequest);
 
-        Task<string> DeleteSecretAsync(string secretName);
+        Task<string> DeleteSecretBySecretNameAsync(SecretDeleteRequest secretDeleteRequest);
 
-        Task<string> PurgeSecretAsync(string secretName);
+        Task<string> PurgeSecretBySecretNameAsync(SecretPurgeRequest secretPurgeRequest);
     }
 }

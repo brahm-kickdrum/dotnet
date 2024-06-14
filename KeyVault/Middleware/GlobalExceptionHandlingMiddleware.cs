@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using KeyVault.Constants;
+using Microsoft.AspNetCore.Mvc;
 using System.Net;
 using System.Text.Json;
 
@@ -21,7 +22,7 @@ namespace KeyVault.Middlewares
             }
             catch (Exception ex)
             {
-                await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError, "Server error");
+                await HandleExceptionAsync(context, ex, HttpStatusCode.InternalServerError, ErrorMessages.ServerError);
             }
         }
         private async Task HandleExceptionAsync(HttpContext context, Exception ex, HttpStatusCode statusCode, string message)

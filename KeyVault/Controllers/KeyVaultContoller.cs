@@ -1,11 +1,12 @@
-﻿using KeyVault.Exceptions;
-using KeyVault.Models;
+﻿using KeyVault.Constants;
+using KeyVault.Exceptions;
+using KeyVault.Models.Requests;
 using KeyVault.Services.IService;
 using Microsoft.AspNetCore.Mvc;
 
 namespace KeyVault.Controllers
 {
-    [Route("api/secret")]
+    [Route(RouteConstants.BaseRoute)]
     [ApiController]
     public class KeyVaultContoller : ControllerBase
     {
@@ -16,12 +17,12 @@ namespace KeyVault.Controllers
             _keyVaultService = keyVaultService;
         }
 
-        [HttpPost("create")]
+        [HttpPost(RouteConstants.CreateSecret)]
         public async Task<ActionResult<string>> CreateSecretAsync(SecretCreateRequest secretCreateRequest)
         {
             try
             {
-                string result = await _keyVaultService.CreateSecretAsync(secretCreateRequest);
+                string result = await _keyVaultService.CreateSecretBySecretNameAndValueAsync(secretCreateRequest);
                 return Ok(result);
             }
             catch (ConfigurationException ex)
@@ -34,30 +35,12 @@ namespace KeyVault.Controllers
             }
         }
 
-        [HttpGet("retrieve/{secretName}")]
-        public async Task<ActionResult<string>> RetrieveSecretAsync(string secretName)
+        [HttpGet(RouteConstants.RetrieveSecret)]
+        public async Task<ActionResult<string>> RetrieveSecretAsync([FromQuery] SecretRetrieveRequest secretRetrieveRequest)
         {
             try
             {
-                string result = await _keyVaultService.RetrieveSecretAsync(secretName);
-                return Ok(result);
-            }
-            catch (ConfigurationException ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError , ex.Message);
-            }
-            catch (KeyVaultOperationException ex)
-            {
-                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
-            }
-        }
-
-        [HttpDelete("delete/{secretName}")]
-        public async Task<ActionResult<string>> DeleteSecretAsync(string secretName)
-        {
-            try
-            {
-                string result = await _keyVaultService.DeleteSecretAsync(secretName);
+                string result = await _keyVaultService.RetrieveSecretBySecretNameAsync(secretRetrieveRequest);
                 return Ok(result);
             }
             catch (ConfigurationException ex)
@@ -70,12 +53,30 @@ namespace KeyVault.Controllers
             }
         }
 
-        [HttpDelete("purge/{secretName}")]
-        public async Task<ActionResult<string>> PurgeSecretAsync(string secretName)
+        [HttpDelete(RouteConstants.DeleteSecret)]
+        public async Task<ActionResult<string>> DeleteSecretAsync([FromQuery] SecretDeleteRequest secretDeleteRequest)
         {
             try
             {
-                string result = await _keyVaultService.PurgeSecretAsync(secretName);
+                string result = await _keyVaultService.DeleteSecretBySecretNameAsync(secretDeleteRequest);
+                return Ok(result);
+            }
+            catch (ConfigurationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+            catch (KeyVaultOperationException ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpDelete(RouteConstants.PurgeSecret)]
+        public async Task<ActionResult<string>> PurgeSecretAsync([FromQuery] SecretPurgeRequest secretPurgeRequest)
+        {
+            try
+            {
+                string result = await _keyVaultService.PurgeSecretBySecretNameAsync(secretPurgeRequest);
                 return Ok(result);
             }
             catch (ConfigurationException ex)
