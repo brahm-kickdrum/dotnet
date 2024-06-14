@@ -1,6 +1,7 @@
 ﻿using Azure;
 using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
+using BlobStorage.Configurations;
 using BlobStorage.Constants;
 using BlobStorage.Enums;
 using BlobStorage.Exceptions;
@@ -14,25 +15,13 @@ namespace BlobStorage.Services.Implementations
     public class BlobStorageService : IBlobStorageService
     {
         private readonly BlobServiceClient _blobServiceClient;
-        private readonly IKeyVaultService _keyVaultService;
+        private readonly BlobStorageConfigurations _blobStorageConfigurations;
 
-        public BlobStorageService(IKeyVaultService keyVaultService)
+        public BlobStorageService(BlobStorageConfigurations blobStorageConfigurations)
         {
-            _keyVaultService = keyVaultService;
-            string connectionString = GetStorageConnectionStringBySecretName(AppConstants.BlobStorageConnectionString).GetAwaiter().GetResult();
+            _blobStorageConfigurations = blobStorageConfigurations;
+            string connectionString = _blobStorageConfigurations.BlobStorageConnectionString;
             _blobServiceClient = new BlobServiceClient(connectionString);
-        }
-
-        private async Task<string> GetStorageConnectionStringBySecretName(string secretName)
-        {
-            try
-            {
-                return await _keyVaultService.RetrieveSecretAsync(secretName);
-            }
-            catch (Exception)
-            {
-                throw new ConfigurationException(ErrorMessages.RetrieveSecretError);
-            }
         }
 
         public async Task<string> CreateContainerByContainerNameAsync(CreateContainerRequest createContainerRequest)
@@ -61,10 +50,9 @@ namespace BlobStorage.Services.Implementations
 
                 return string.Format(ResponseMessages.AccessPolicySetSuccessfully, setAccessPolicyRequest.ContainerName, accessType);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                throw new BlobStorageOperationException(ex.Message);
-                //throw new BlobStorageOperationException(string.Format(ErrorMessages.AccessPolicyError, setAccessPolicyRequest.ContainerName));
+                throw new BlobStorageOperationException(string.Format(ErrorMessages.AccessPolicyError, setAccessPolicyRequest.ContainerName));
             }
         }
 
@@ -86,9 +74,10 @@ namespace BlobStorage.Services.Implementations
 
                 return uri;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw new BlobStorageOperationException(string.Format(ErrorMessages.UploadFileError, uploadFileRequest.ContainerName));
+                throw new BlobStorageOperationException(ex.Message);
+                //throw new BlobStorageOperationException(string.Format(ErrorMessages.UploadFileError, uploadFileRequest.ContainerName));
             }
         }
 

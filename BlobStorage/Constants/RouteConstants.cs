@@ -7,7 +7,7 @@
         public const string SetAccessPolicy = "set-access-policy";
         public const string UploadBlob = "upload-blob";
         public const string ListBlobs = "list-blobs";
-        public const string DownloadBlobs = "download-blobs";
+        public const string DownloadBlob = "download-blob";
         public const string DeleteContainer = "delete-container";
         public const string DeleteBlob = "delete-blob";
     }

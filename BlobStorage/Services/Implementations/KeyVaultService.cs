@@ -27,6 +27,7 @@ namespace BlobStorage.Services.Implementations
         {
             try
             {
+                await Console.Out.WriteLineAsync("hellooooo");
                 KeyVaultSecret secret = await _secretClient.GetSecretAsync(secretName);
                 return secret.Value;
             }

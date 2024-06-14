@@ -6,5 +6,7 @@
         public const string BlobStorageConnectionString = "BlobStorageConnectionString";
         public const string KeyVaultName = "KEY_VAULT_NAME";
         public const string KeyVaultUri = "https://{0}.vault.azure.net";
+        public const int ContainerNameMaxLength = 63;
+        public const int ContainerNameMinLength = 3;
     }
 }

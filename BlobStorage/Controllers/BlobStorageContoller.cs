@@ -107,7 +107,7 @@ namespace BlobStorage.Controllers
             }
         }
 
-        [HttpPost(RouteConstants.DownloadBlobs)]
+        [HttpPost(RouteConstants.DownloadBlob)]
         public async Task<ActionResult<string>> DownloadBlobs(DownloadBlobRequest downloadBlobRequest)
         {
             try
