@@ -1,5 +1,7 @@
 ﻿using Azure.Messaging.EventHubs;
 using Azure.Messaging.EventHubs.Producer;
+using EventHub.Configurations;
+using EventHub.Constants;
 using EventHub.Exceptions;
 using EventHub.Services.IServices;
 using Microsoft.AspNetCore.Components.Web;
@@ -10,21 +12,21 @@ namespace EventHub.Services.Implementations
 {
     public class EventProducerService : IEventProducerService
     {
-        private readonly IKeyVaultService _keyVaultService;
+        private readonly EventHubConfigurations _eventHubConfigurations;
 
-        public EventProducerService(IKeyVaultService keyVaultService)
+        public EventProducerService(EventHubConfigurations eventHubConfigurations)
         {
-            _keyVaultService = keyVaultService;
+            _eventHubConfigurations = eventHubConfigurations;
         }
 
         public async Task<string> SendEventsAsync(int n)
         {
-            string connectionString = await _keyVaultService.RetrieveSecretAsync("EventHubSendConnectionString");
-            string eventHubName = await _keyVaultService.RetrieveSecretAsync("EventHubSendName");
+            string connectionString = _eventHubConfigurations.EventHubSendConnectionString;
+            string eventHubName = _eventHubConfigurations.EventHubSendName;
 
             if (string.IsNullOrEmpty(connectionString) || string.IsNullOrEmpty(eventHubName))
             {
-                throw new ConfigurationException("Oops! It looks like something went wrong while trying to connect.");
+                throw new ConfigurationException(ErrorMessages.ConfigurationError);
             }
 
             await using (var producerClient = new EventHubProducerClient(connectionString, eventHubName))
@@ -33,11 +35,11 @@ namespace EventHub.Services.Implementations
 
                 for (int i = 1; i <= n; i++)
                 {
-                    eventBatch.TryAdd(new EventData(Encoding.UTF8.GetBytes($"event {i}")));
+                    eventBatch.TryAdd(new EventData(Encoding.UTF8.GetBytes(string.Format(AppConstants.Event, i))));
                 }
 
                 await producerClient.SendAsync(eventBatch);
-                return $"A batch of {n} events has been published.";
+                return string.Format(ResponseMessages.EventsSentFormat, n);
             }
         }
     }

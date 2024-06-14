@@ -1,10 +1,11 @@
-﻿using EventHub.Exceptions;
+﻿using EventHub.Constants;
+using EventHub.Exceptions;
 using EventHub.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
 
 namespace EventHub.Controllers
 {
-    [Route("api/event-producer")]
+    [Route(RouteConstants.EventProducerBase)]
     [ApiController]
     public class EventProducerController : ControllerBase
     {
